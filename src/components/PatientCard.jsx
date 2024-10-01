@@ -12,13 +12,13 @@ const PatientCard = ({ name, email }) => {
       <p className="text-gray-600 text-center">{email}</p>
       <div className="flex justify-between mt-4">
         <button className="flex items-center justify-center space-x-1 text-white rounded-lg py-3 px-4 w-32">
-          <img src="/email-icon.png" alt="Email" style={{ width: '80px', height: '60px' }} />
+          <img src="/email-icon.png" alt="Email" className="w-6 h-6" />
         </button>
         <button className="flex items-center justify-center space-x-1 text-white rounded-lg py-3 px-4 w-32">
-          <img src="/phone-icon.png" alt="Phone" style={{ width: '80px', height: '60px' }} />
+          <img src="/phone-icon.png" alt="Phone" className="w-6 h-6" />
         </button>
         <button className="flex items-center justify-center space-x-1 text-white rounded-lg py-3 px-4 w-32">
-          <img src="/details-icon.png" alt="Details" style={{ width: '80px', height: '60px' }} />
+          <img src="/details-icon.png" alt="Details" className="w-6 h-6" />
         </button>
       </div>
     </div>

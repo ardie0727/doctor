@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'; // Import Link for navigation
 
 const Sidebar = () => {
   return (
-    <aside className="bg-gray-100 w-64 h-[calc(100vh-80px)] sticky top-16 flex flex-col justify-between">
+    <aside className="bg-gray-100 w-64 h-[calc(100vh-73px)] sticky top-16 flex flex-col justify-between">
       <div className="flex-grow flex flex-col justify-center">
         <ul className="mt-8">
           <li className="py-2 flex items-center pl-4"> {/* Added padding-left */}

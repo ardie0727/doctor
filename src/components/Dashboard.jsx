@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
-const Dashboard = () => {
+const Dashboard = ({ appointments, addAppointment }) => {
+  const navigate = useNavigate();
   const [date, setDate] = useState(new Date());
   const [calendarHeight, setCalendarHeight] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [patientName, setPatientName] = useState('');
-  const [reason, setReason] = useState('');
-  const [time, setTime] = useState('');
-  const [appointments, setAppointments] = useState([]);
-  const [highlightedDates, setHighlightedDates] = useState(new Set());
 
   useEffect(() => {
     const month = date.getMonth();
@@ -23,17 +19,68 @@ const Dashboard = () => {
     setCalendarHeight(`${totalRows * 50}px`);
   }, [date]);
 
-  const handleAddAppointment = () => {
-    if (patientName && reason && time) {
-      const newAppointment = { patientName, reason, time };
-      setAppointments([...appointments, newAppointment]);
-      setHighlightedDates(new Set([...highlightedDates, date.toDateString()]));
-      setModalOpen(false);
-      setPatientName('');
-      setReason('');
-      setTime('');
+  // Function to create hourly time slots for the day
+  const createTimeSlots = () => {
+    const slots = [];
+    const startTime = 8; // Start at 8 AM
+    const endTime = 18; // End at 6 PM
+    for (let hour = startTime; hour < endTime; hour++) {
+      slots.push(`${hour}:00`); // Add whole hours
+      slots.push(`${hour}:30`); // Add half hours
     }
+    return slots;
   };
+
+  // Get time slots
+  const timeSlots = createTimeSlots();
+
+  // Function to get booked time slots for candles
+  const getBookedSlots = () => {
+    return appointments.map(appointment => {
+      const start = appointment.time;
+      const end = new Date(new Date(start).getTime() + 30 * 60000).toISOString().slice(11, 16); // Adding 30 minutes
+      return { start, end };
+    });
+  };
+
+  // Get booked slots
+  const bookedSlots = getBookedSlots();
+
+  // Check if a time slot is booked
+  const isTimeSlotBooked = (slot) => {
+    return bookedSlots.some(({ start, end }) => slot === start || slot === end);
+  };
+
+  // Get candle graph classes based on appointments
+  const getCandleGraphStyle = (slot) => {
+    const bookedAppointment = bookedSlots.find(({ start }) => start === slot);
+    if (bookedAppointment) {
+      return {
+        position: 'absolute',
+        bottom: 0,
+        width: '20px', // width of the candle graph
+        height: '30px',
+        backgroundColor: 'blue',
+        left: '50%',
+        transform: 'translateX(-50%)', // Center the candle
+      };
+    }
+    return {};
+  };
+
+  // Get current time and calculate index to start rendering slots
+  const getCurrentTimeSlotIndex = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+    const currentSlot = `${currentHour}:${currentMinutes < 30 ? '00' : '30'}`;
+
+    return timeSlots.findIndex(slot => slot === currentSlot) === -1
+      ? timeSlots.findIndex(slot => slot > currentSlot) // Find the next time slot
+      : timeSlots.findIndex(slot => slot === currentSlot); // Find current slot if it exists
+  };
+
+  const currentTimeSlotIndex = getCurrentTimeSlotIndex();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -45,25 +92,47 @@ const Dashboard = () => {
             <div className="flex-1 mr-4">
               <h2 className="text-2xl font-bold mb-4">Today's Overview</h2>
               <div className="flex space-x-4 mb-4">
-                <div className="bg-white rounded-lg shadow-lg p-4 w-[194px] h-[100px] flex items-center justify-center">Patients</div>
-                <div className="bg-white rounded-lg shadow-lg p-4 w-[194px] h-[100px] flex items-center justify-center">Appointments</div>
-                <div className="bg-white rounded-lg shadow-lg p-4 w-[194px] h-[100px] flex items-center justify-center">Reviews</div>
-                <div className="bg-white rounded-lg shadow-lg p-4 w-[194px] h-[100px] flex items-center justify-center">Surgery</div>
+                <div className="bg-white rounded-lg shadow-lg p-4 w-[194px] h-[100px] flex items-center justify-center">
+                  Patients
+                </div>
+                <div className="bg-white rounded-lg shadow-lg p-4 w-[194px] h-[100px] flex items-center justify-center">
+                  Appointments
+                </div>
+                <div className="bg-white rounded-lg shadow-lg p-4 w-[194px] h-[100px] flex items-center justify-center">
+                  Reviews
+                </div>
+                <div className="bg-white rounded-lg shadow-lg p-4 w-[194px] h-[100px] flex items-center justify-center">
+                  Surgery
+                </div>
               </div>
 
               <h2 className="text-2xl font-bold mb-4">Schedule</h2>
-              <div className="bg-white rounded-lg shadow-lg w-[863px] h-[200px] p-4 mb-4">Timeline Card</div>
+              <div className="bg-white rounded-lg shadow-lg w-[863px] h-[200px] p-4 mb-4 relative">
+                <div className="flex" style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                  {timeSlots.slice(currentTimeSlotIndex).map((slot, index) => (
+                    <div
+                      key={index}
+                      className={`flex flex-col items-center justify-center border-b h-8 relative ${isTimeSlotBooked(slot) ? 'bg-green-300' : 'bg-white'}`}
+                      style={{ minWidth: '80px', height: '30px', marginRight: '20px' }} // Adjust width and spacing
+                    >
+                      <span className="text-ellipsis overflow-hidden">{slot}</span>
+                      {/* Candle Graph for booked slots */}
+                      <div style={getCandleGraphStyle(slot)} />
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               <div className="bg-white rounded-lg shadow-lg w-[863px] p-4 mb-4">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-bold mb-2">Upcoming Appointments</h2>
-                  <button 
-                    className="text-blue-500" 
-                    onClick={() => setModalOpen(true)}
+                <h2 className="text-xl font-bold mb-2 flex justify-between items-center">
+                  Upcoming Appointments
+                  <button
+                    onClick={() => navigate('/appointments', { state: { addAppointment } })}
+                    className="text-blue-500 text-xl"
                   >
                     +
                   </button>
-                </div>
+                </h2>
                 <table className="min-w-full">
                   <thead>
                     <tr className="bg-gray-200">
@@ -73,13 +142,19 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {appointments.map((appointment, index) => (
-                      <tr key={index}>
-                        <td className="border p-2">{appointment.patientName}</td>
-                        <td className="border p-2">{appointment.reason}</td>
-                        <td className="border p-2">{appointment.time}</td>
+                    {appointments.length === 0 ? (
+                      <tr>
+                        <td colSpan="3" className="text-center p-2">No upcoming appointments</td>
                       </tr>
-                    ))}
+                    ) : (
+                      appointments.map((appointment, index) => (
+                        <tr key={index} className="hover:bg-gray-100">
+                          <td className="border p-2">{appointment.patientName}</td>
+                          <td className="border p-2">{appointment.reason}</td>
+                          <td className="border p-2">{appointment.time}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -90,7 +165,7 @@ const Dashboard = () => {
                 <Calendar
                   onChange={setDate}
                   value={date}
-                  className={`w-full border-none rounded-lg ${highlightedDates.has(date.toDateString()) ? 'bg-yellow-300' : ''}`}
+                  className="w-full border-none rounded-lg"
                 />
               </div>
 
@@ -99,47 +174,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-
-          {modalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="bg-white p-6 rounded shadow-lg">
-                <h2 className="text-xl font-bold mb-4">Add Appointment</h2>
-                <input
-                  type="text"
-                  placeholder="Patient Name"
-                  value={patientName}
-                  onChange={(e) => setPatientName(e.target.value)}
-                  className="border p-2 mb-4 w-full"
-                />
-                <input
-                  type="text"
-                  placeholder="Reason"
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  className="border p-2 mb-4 w-full"
-                />
-                <input
-                  type="text"
-                  placeholder="Time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  className="border p-2 mb-4 w-full"
-                />
-                <button
-                  onClick={handleAddAppointment}
-                  className="bg-blue-500 text-white py-2 px-4 rounded"
-                >
-                  Add Appointment
-                </button>
-                <button
-                  onClick={() => setModalOpen(false)}
-                  className="ml-2 py-2 px-4 rounded border border-gray-400"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
         </main>
       </div>
     </div>
