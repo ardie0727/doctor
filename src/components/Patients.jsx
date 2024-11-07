@@ -1,13 +1,17 @@
-// Patients.jsx
 import React, { useState } from 'react';
-import PatientCard from './PatientCard'; // Import the PatientCard component
+import PatientCard from './PatientCard'; 
 import Layout from './Layout';
 
+
+//layours se sidebar and navboar ka format aya hai.
+//isme patient cards hai
+//ye poora hata de and patient card.
+//search bar add krde sirf tere isme
 const Patients = () => {
   // State for search term
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Sample patient data
+
   const patients = [
     { name: 'Vivek Chouhan', email: 'vivek.211215.co@mhssce.ac.in' },
     { name: 'Rehan Sayyed', email: 'rehan.211242.co@mhssce.ac.in' },
@@ -33,7 +37,7 @@ const Patients = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      {/* Patient Cards */}
+      {}
       <div className="grid grid-cols-4 gap-6">
         {filteredPatients.map((patient, index) => (
           <PatientCard key={index} name={patient.name} email={patient.email} />

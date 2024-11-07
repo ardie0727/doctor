@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+//Appointments page ka form
 const AppointmentForm = ({ addAppointment }) => {
   const [newAppointment, setNewAppointment] = useState({
     patientName: '',

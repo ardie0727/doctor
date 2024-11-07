@@ -1,7 +1,6 @@
-// Sidebar.jsx
 import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link for navigation
-
+import { Link } from 'react-router-dom';
+//isme se patient ka poora hata de...And wo patients he files delete
 const Sidebar = () => {
   return (
     <aside className="bg-gray-100 w-64 h-[calc(100vh-73px)] sticky top-16 flex flex-col justify-between">
@@ -19,6 +18,7 @@ const Sidebar = () => {
               Appointments
             </Link>
           </li>
+           
           <li className="py-2 flex items-center pl-4"> {/* Added padding-left */}
             <img src="/ImagePatients-icon.png" alt="Patients" className="w-8 h-8 mr-3" /> {/* Increased icon size */}
             <Link to="/" className="text-lg font-bold hover:text-red-500 focus:text-red-500"> {/* Link to patients (default route) */}

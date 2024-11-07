@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from './Layout';
-
+//sidebar se route
 const Appointments = ({ appointments, addAppointment }) => {
   const [newAppointment, setNewAppointment] = useState({
     patientName: '',

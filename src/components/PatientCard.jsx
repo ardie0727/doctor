@@ -1,5 +1,5 @@
 import React from 'react';
-
+//patient cards single
 const PatientCard = ({ name, email }) => {
   return (
     <div className="bg-white shadow-lg rounded-2xl p-6 mb-6 h-96 flex flex-col justify-between">

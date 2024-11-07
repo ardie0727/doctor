@@ -1,5 +1,7 @@
 import React from 'react';  
-
+//upar wala navbar hai
+//ye aur sidebar layout mai import kiye hai
+//bohot ghatiya hai dono
 const Header = () => {  
   return (  
     <header className="bg-gray-100 py-4 flex justify-between items-center sticky top-0 shadow z-50">  

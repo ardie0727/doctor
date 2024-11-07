@@ -1,5 +1,6 @@
 import React from 'react';  
-  
+
+//
 const GridItem = ({ name }) => {  
   return (  
    <div className="bg-white p-4 rounded shadow-md flex flex-col justify-center items-center">  

@@ -5,6 +5,9 @@ import Sidebar from './Sidebar';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
+//wo candle graph nahi ban raha 
+//chatgpt nahi de raha thik se
+
 const Dashboard = ({ appointments, addAppointment }) => {
   const navigate = useNavigate();
   const [date, setDate] = useState(new Date());
